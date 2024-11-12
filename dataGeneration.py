@@ -149,25 +149,33 @@ investment_recommendation = {
 }
 
 # Generate dashboard layout
+def userMostUseData():
+    list = []
+    list.append({
+            'User_ID': user['User_ID'],
+            'Customer_Usage' : 'Add Money'
+        })
+    for i in range(random.randint(1,30)):
+        list.append({
+            'User_ID': user['User_ID'],
+            'Customer_Usage' : random.choice(['Portfolio Summary', 'Order History', 'Explore Funds', 'Pay', 'Performance','Investment Recommendations', 'Add Money', 'Withdraw'])
+        })
+    return list
+
 dashboard_layout = {
     'Layout_ID': fake.uuid4(),
     'User_ID': user['User_ID'],
     'Section_Order': [
         {'Section': 'Portfolio Summary', 'Order': 1},
         {'Section': 'Investment Recommendations', 'Order': 2},
-        {'Section': 'Performance Metrics', 'Order': 3},
+        {'Section': 'Performance', 'Order': 3},
         {'Section': 'Asset Details', 'Order': 4},
         {'Section': 'Withdraw', 'Order': 5},
         {'Section': 'Explore Funds', 'Order': 6},
         {'Section': 'Order History', 'Order': 7},
         {'Section': 'Pay', 'Order': 8}
     ],
-    'Most_Used_Sections': ['Pay', 'Portfolio Summary', 'Investment Recommendations', 'Explore Funds', 'Performance Metrics', 'Asset Details'],
-    'User_Customization': {
-        'Theme': random.choice(['Light', 'Dark']),
-        'Font_Size': random.choice(['Small', 'Medium', 'Large'])
-    },
-    'Preferred_View_Mode': random.choice(['Grid', 'List'])
+    'Customer_Usage_History' : userMostUseData()
 }
 
  
