@@ -1,8 +1,26 @@
 import random
 from datetime import datetime, timedelta
 from faker import Faker
+import json
 
 fake = Faker()
+
+# Create User
+def createUser():
+    return {
+        'User_ID': fake.uuid4(),
+        'Name': fake.name(),
+        'Age': fake.pyint(min_value=18, max_value=65),
+        'Gender': random.choice(['Male', 'Female', 'Others']),
+        'Location': f"{fake.city()}, {fake.state()}",
+        'Occupation': fake.job(),
+        'Income_Bracket': random.choice(['Low', 'Middle', 'High']),
+        'Investment_Experience_Level': random.choice(['Beginner', 'Intermediate', 'Advanced']),
+        'Ethical_Preferences': random.choice(['Environmental', 'Social', 'Governance']),
+        'Financial_Goals': random.choice(['Retirement', 'Wealth Accumulation', 'Debt Reduction']),
+        'Risk_Tolerance': random.choice(['Low', 'Moderate', 'High']),
+        'Portfolios': [generate_portfolio() for _ in range(random.randint(1, 3))]
+    }
 
 # Function to generate a single portfolio
 def generate_portfolio():
@@ -12,12 +30,23 @@ def generate_portfolio():
     risk_tolerance = random.choice(['Low', 'Moderate', 'High'])
     goal_type = random.choice(['Growth', 'Income', 'Preservation'])
     investment_strategy = random.choice(['Aggressive', 'Balanced', 'Conservative'])
-    total_asset_value = round(fake.pyfloat(left_digits=5, right_digits=2, positive=True), 2)
+    total_asset_value = round(fake.pyfloat(left_digits=5, right_digits=2, positive=True), 2) 
+
+    vals = []
+    x = 0
+    rem = 100
+    while x < 2:
+        t = random.randint(0,rem)
+        vals.append(t)
+        rem -= t
+        x+=1
+
+    vals.append(rem)
 
     asset_distribution = [
-        {'Asset_Type': 'Stocks', 'Percentage': round(fake.pyfloat(left_digits=2, right_digits=1, positive=True), 1)},
-        {'Asset_Type': 'Bonds', 'Percentage': round(fake.pyfloat(left_digits=2, right_digits=1, positive=True), 1)},
-        {'Asset_Type': 'Cash', 'Percentage': round(fake.pyfloat(left_digits=2, right_digits=1, positive=True), 1)}
+        {'Asset_Type': 'Stocks', 'Percentage': vals[0]},
+        {'Asset_Type': 'ETF / Funds', 'Percentage': vals[1]},
+        {'Asset_Type': 'Cash', 'Percentage': vals[2]}
     ]
 
     transactions = [
@@ -45,7 +74,7 @@ def generate_portfolio():
             'Benchmark_Performance': round(fake.pyfloat(left_digits=2, right_digits=2, positive=True), 2),
             'Dividend_Payouts': round(fake.pyfloat(left_digits=4, right_digits=2, positive=True), 2)
         } for _ in range(random.randint(1, 4))
-    ]
+    ] 
 
     return {
         'Portfolio_ID': portfolio_id,
@@ -61,20 +90,7 @@ def generate_portfolio():
     }
 
 # Generate user data
-user = {
-    'User_ID': 1,
-    'Name': fake.name(),
-    'Age': fake.pyint(min_value=18, max_value=65),
-    'Gender': random.choice(['Male', 'Female', 'Non-binary']),
-    'Location': f"{fake.city()}, {fake.state()}",
-    'Occupation': fake.job(),
-    'Income_Bracket': random.choice(['Low', 'Middle', 'High']),
-    'Investment_Experience_Level': random.choice(['Beginner', 'Intermediate', 'Advanced']),
-    'Ethical_Preferences': random.choice(['Environmental', 'Social', 'Governance']),
-    'Financial_Goals': random.choice(['Retirement', 'Wealth Accumulation', 'Debt Reduction']),
-    'Risk_Tolerance': random.choice(['Low', 'Moderate', 'High']),
-    'Portfolios': [generate_portfolio() for _ in range(random.randint(1, 3))]
-}
+user = createUser()
 
 # Generate investment asset data
 investment_asset = {
@@ -85,11 +101,11 @@ investment_asset = {
     'Sector': fake.job(),
     'Market': random.choice(['NYSE', 'NASDAQ', 'LSE']),
     'Risk_Level': random.choice(['Low', 'Moderate', 'High']),
-    'Expected_Return_Rate': round(fake.pyfloat(left_digits=2, right_digits=2, positive=True), 2),
-    'Dividend_Yield': round(fake.pyfloat(left_digits=2, right_digits=2, positive=True), 2),
+    'Expected_Return_Rate': round(fake.pyfloat(left_digits=2, right_digits=2, max_value=30, positive=True), 2),
+    'Dividend_Yield': round(fake.pyfloat(left_digits=2, right_digits=2, max_value=15, positive=True), 2),
     'ESG_Score': fake.pyint(min_value=0, max_value=100),
     'Ethical_Alignment': random.choice(['Environmental', 'Social', 'Governance']),
-    'Market_Cap': round(fake.pyfloat(left_digits=9, right_digits=2, positive=True), 2),
+    'Market_Cap': round(fake.pyfloat(left_digits=9, right_digits=2, positive=True, min_value=1000, max_value=10000), 2),
     'Inception_Date': fake.date_between(start_date='-20y', end_date='today').strftime('%Y-%m-%d'),
     'Market_Data_and_Trends': [
         {
@@ -104,6 +120,7 @@ investment_asset = {
             'Social_Media_Sentiment_Score': round(fake.pyfloat(left_digits=1, right_digits=1, positive=True), 1)
         } for _ in range(random.randint(1, 5))
     ],
+
     'Ethical_and_Sustainable_Investment': {
         'Ethical_Investment_ID': fake.uuid4(),
         'ESG_Score': fake.pyint(min_value=0, max_value=100),
@@ -113,9 +130,11 @@ investment_asset = {
         'Cause_Alignment': random.choice(['Climate Change', 'Human Rights', 'Corporate Governance']),
         'Sustainability_Certification': random.choice(['Certified B Corp', 'LEED Certified', 'ISO 14001'])
     }
+
 }
 
 # Generate investment recommendation
+
 investment_recommendation = {
     'Recommendation_ID': fake.uuid4(),
     'User_ID': user['User_ID'],
@@ -126,7 +145,7 @@ investment_recommendation = {
     'Expected_Return': round(fake.pyfloat(left_digits=2, right_digits=2, positive=True), 2),
     'Risk_Level': random.choice(['Low', 'Moderate', 'High']),
     'Ethical_Alignment': random.choice(['Environmental', 'Social', 'Governance']),
-    'Investment_Horizon': f"{fake.pyint(min_value=1, max_value=10)} years"
+    'Investment_Horizon': f"{fake.pyint(min_value=1, max_value=20)} years"
 }
 
 # Generate dashboard layout
@@ -137,9 +156,13 @@ dashboard_layout = {
         {'Section': 'Portfolio Summary', 'Order': 1},
         {'Section': 'Investment Recommendations', 'Order': 2},
         {'Section': 'Performance Metrics', 'Order': 3},
-        {'Section': 'Asset Details', 'Order': 4}
+        {'Section': 'Asset Details', 'Order': 4},
+        {'Section': 'Withdraw', 'Order': 5},
+        {'Section': 'Explore Funds', 'Order': 6},
+        {'Section': 'Order History', 'Order': 7},
+        {'Section': 'Pay', 'Order': 8}
     ],
-    'Most_Used_Sections': ['Portfolio Summary', 'Performance Metrics', 'Asset Details'],
+    'Most_Used_Sections': ['Pay', 'Portfolio Summary', 'Investment Recommendations', 'Explore Funds', 'Performance Metrics', 'Asset Details'],
     'User_Customization': {
         'Theme': random.choice(['Light', 'Dark']),
         'Font_Size': random.choice(['Small', 'Medium', 'Large'])
@@ -147,16 +170,20 @@ dashboard_layout = {
     'Preferred_View_Mode': random.choice(['Grid', 'List'])
 }
 
+ 
+
 # Generate educational resource
 educational_resource = {
     'Resource_ID': fake.uuid4(),
     'Content_Type': 'Article',
     'Topic': 'Investing Basics',
     'Difficulty_Level': random.choice(['Beginner', 'Intermediate', 'Advanced']),
-    'URL': 'https://example.com/investing-basics',
+    'URL': 'https://screener.in',
     'Recommended_Users': [user['User_ID'], fake.pyint(min_value=2, max_value=100)],
     'Engagement_Rate': round(fake.pyfloat(left_digits=2, right_digits=2, positive=True), 2)
 }
+
+ 
 
 # Generate user behavior and preferences
 user_behavior_and_preferences = {
@@ -177,6 +204,7 @@ user_behavior_and_preferences = {
     'Learning_Preferences': random.sample(['Text', 'Video', 'Audio'], k=random.randint(1, 3))
 }
 
+
 # Combine all the data into a single dictionary
 synthetic_data = {
     'User': user,
@@ -187,4 +215,13 @@ synthetic_data = {
     'User_Behavior_and_Preferences': user_behavior_and_preferences
 }
 
+ 
+
 print(synthetic_data)
+data = []
+for i in range(10):
+    data.append(synthetic_data)
+json_str = json.dumps(data)
+f = open("data.txt", "a")
+f.write(json_str)
+f.close()
